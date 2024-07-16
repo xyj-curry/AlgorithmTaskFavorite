@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Algorithm Task Favorite</title>
+		<link rel="stylesheet" href="./popup.css">
+	</head>
+	<body>
+		<div style="display: flex;">
+			<div id="add-task-head">添加题目(顶)</div>
+			<div id="add-task-tail">添加题目(底)</div>
+		</div>
+		<div id="label-list">
+			<div id="all" class="label">All</div>
+			<div id="qqdocs" class="label">QQ docs</div>
+			<div id="luogu" class="label">luogu</div>
+			<div id="codeforces" class="label">Codeforces</div>
+			<div id="atcoder" class="label">Atcoder</div>
+			<div id="iai" class="label">iai</div>
+		</div>
+		<div id="task-list">
+		</div>
+		<div id="edit-task">
+			<img src="../images/back.jpg" alt="返回" id="back" />
+			<div>
+				<span style="font-size: 20px; font-weight: bold;">重命名:&nbsp;</span>
+				<input id="change-name" type="text" style="font-size: 20px; height: 33px;" />
+				<button id="submit-change-name">确认</button>
+			</div>
+			<div>
+				<span style="font-size: 20px; font-weight: bold;">重命url:&nbsp;</span>
+				<input id="change-url" type="text" style="font-size: 20px; height: 33px;" />
+				<button id="submit-change-url">确认</button>
+			</div>
+			<span style="font-size: 20px; font-weight: bold; margin-top: 10px;">修改位置:</span>
+			<span style="font-size: 19px;">(此处显示的是当前位置及其上下题目, 红色为<br>当前题目)</span>
+			<div id="edit-task-list">
+			</div>
+			<div>
+				<span style="font-size: 20px; font-weight: bold; align-items: center;">位置:</span>
+				<input id="change-pos" type="text" style="height: 33px; width: 177px; font-size: 20px;" />
+				<button id="submit-change-pos" style="height: 33px;">确认</button>
+				<img id="pos-up" src="../images/up.jpg" alt="上"
+					style="border: 2px solid black; margin-left: 10px; margin-right: 10px; margin-top: 10px;" />
+				<img id="pos-down" src="../images/down.jpg" style="border: 2px solid black; " alt="下" />
+			</div>
+		</div>
+		<script src="popup.js"></script>
+	</body>
+</html>

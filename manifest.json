@@ -1,0 +1,30 @@
+{
+	"manifest_version": 3,
+	"name": "Algorithm Task Favorite",
+	"version": "1.0.0",
+	"description": "Save algorithm questions from all websites",
+	"icons": {
+		"48": "images/logo.png"
+	},
+	"content_scripts": [{
+		"js": [
+			"scripts/gethtml.js"
+		],
+		"matches": [
+			"https://atcoder.jp/*",
+			"https://www.luogu.com.cn/*",
+			"https://codeforces.com/*",
+			"https://iai.sh.cn/*"
+		]
+	}],
+	"action": {
+		"48": "images/logo.png",
+		"default_title": "Algorithm Task Favorite",
+		"default_popup": "popup/popup.html"
+	},
+	"permissions": [
+		"storage",
+		"tabs",
+		"scripting"
+	]
+}
