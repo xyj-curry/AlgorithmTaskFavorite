@@ -11,10 +11,11 @@
 			"scripts/gethtml.js"
 		],
 		"matches": [
-			"https://atcoder.jp/*",
 			"https://www.luogu.com.cn/*",
 			"https://codeforces.com/*",
-			"https://iai.sh.cn/*"
+			"https://atcoder.jp/*",
+			"https://iai.sh.cn/*",
+			"https://vjudge.net/*"
 		]
 	}],
 	"action": {

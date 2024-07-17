@@ -7,11 +7,12 @@ const websites = [
 	["luogu", "luogu", "https://www.luogu.com.cn"],
 	["codeforces", "Codeforces", "https://codeforces.com"],
 	["atcoder", "Atcoder", "https://atcoder.jp"],
-	["iai", "iai", "https://iai.sh.cn/"]
+	["iai", "iai", "https://iai.sh.cn"],
+	["vjudge", "vjudge", "https://vjudge.net"]
 ]
 
 function get_name(url, tabs, callback) {
-	if (/https:\/\/www\.luogu\.com\.cn\/problem\/.+/.test(url)) {
+	if (/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "luogu",
@@ -20,9 +21,13 @@ function get_name(url, tabs, callback) {
 			if (chrome.runtime.lastError) {
 				console.error(chrome.runtime.lastError.message);
 			}
-			callback("luogu_" + response.trim());
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				callback("luogu_" + response.trim());
+			}
 		});
-	} else if (/https:\/\/codeforces\.com\/contest\/\d+\/problem\/.+/.test(url)) {
+	} else if (/https:\/\/codeforces\.com\/contest\/\d+\/problem\/[^\/]+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "codeforces",
@@ -31,15 +36,19 @@ function get_name(url, tabs, callback) {
 			if (chrome.runtime.lastError) {
 				console.error(chrome.runtime.lastError.message);
 			}
-			let temp = url.split("/");
-			let ans = temp.pop();
-			temp.pop();
-			ans = temp.pop() + ans;
-			temp = response.trim().split(".");
-			temp.shift();
-			callback("CF_" + ans + temp.join("."));
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				let temp = url.split("/");
+				let ans = temp.pop();
+				temp.pop();
+				ans = temp.pop() + ans;
+				temp = response.trim().split(".");
+				temp.shift();
+				callback("CF_" + ans + temp.join("."));
+			}
 		});
-	} else if (/https:\/\/atcoder\.jp\/contests\/.+\/tasks\/.+/.test(url)) {
+	} else if (/https:\/\/atcoder\.jp\/contests\/[^\/]+\/tasks\/[^\/]+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "atcoder",
@@ -48,9 +57,13 @@ function get_name(url, tabs, callback) {
 			if (chrome.runtime.lastError) {
 				console.error(chrome.runtime.lastError.message);
 			}
-			let temp = response.trim().split("-");
-			temp.shift();
-			callback("AT_" + url.split("/").pop() + temp.join("-"));
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				let temp = response.trim().split("-");
+				temp.shift();
+				callback("AT_" + url.split("/").pop() + temp.join("-"));
+			}
 		});
 	} else if (/https:\/\/iai\.sh\.cn\/problem\/\d+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
@@ -61,7 +74,26 @@ function get_name(url, tabs, callback) {
 			if (chrome.runtime.lastError) {
 				console.error(chrome.runtime.lastError.message);
 			}
-			callback("iai_" + url.split("/").pop() + " " + response.trim());
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				callback("iai_" + url.split("/").pop() + " " + response.trim());
+			}
+		});
+	} else if (/https:\/\/vjudge\.net\/problem\/[^\/]+/.test(url)) {
+		chrome.tabs.sendMessage(tabs[0].id, {
+			action: "gethtml",
+			web: "vjudge",
+			selector: "#prob-title > h2"
+		}, function(response) {
+			if (chrome.runtime.lastError) {
+				console.error(chrome.runtime.lastError.message);
+			}
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				callback("vjudge_" + url.split("/").pop() + " " + response.trim());
+			}
 		});
 	} else {
 		callback(tabs[0].title);
