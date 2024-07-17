@@ -1,6 +1,15 @@
 var nowid = "all";
 var noweditid = -1;
 
+const websites = [
+	["all", "All"],
+	["qqdocs", "QQ docs", "https://docs.qq.com"],
+	["luogu", "luogu", "https://www.luogu.com.cn"],
+	["codeforces", "Codeforces", "https://codeforces.com"],
+	["atcoder", "Atcoder", "https://atcoder.jp"],
+	["iai", "iai", "https://iai.sh.cn/"]
+]
+
 function get_name(url, tabs, callback) {
 	if (/https:\/\/www\.luogu\.com\.cn\/problem\/.+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
@@ -16,7 +25,7 @@ function get_name(url, tabs, callback) {
 	} else if (/https:\/\/codeforces\.com\/contest\/\d+\/problem\/.+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
-			web: "CodeForces",
+			web: "codeforces",
 			selector: "#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title"
 		}, function(response) {
 			if (chrome.runtime.lastError) {
@@ -33,7 +42,7 @@ function get_name(url, tabs, callback) {
 	} else if (/https:\/\/atcoder\.jp\/contests\/.+\/tasks\/.+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
-			web: "Atcoder",
+			web: "atcoder",
 			selector: "#main-container > div.row > div:nth-child(2) > span.h2"
 		}, function(response) {
 			if (chrome.runtime.lastError) {
@@ -163,19 +172,14 @@ function make_task_list(task_url_list, task_name_list) {
 		let len = 0;
 		document.getElementById("task-list").innerHTML = "";
 		for (let key in task_url_list) {
-			if (nowid == "qqdocs" && (!task_url_list[key].startsWith("https://docs.qq.com"))) {
-				continue;
+			let con = false;
+			for (let i = 1; i < websites.length; i++) {
+				if (nowid == websites[i][0] && (!task_url_list[key].startsWith(websites[i][2]))) {
+					con = true;
+					break;
+				}
 			}
-			if (nowid == "luogu" && (!task_url_list[key].startsWith("https://www.luogu.com.cn"))) {
-				continue;
-			}
-			if (nowid == "codeforces" && (!task_url_list[key].startsWith("https://codeforces.com"))) {
-				continue;
-			}
-			if (nowid == "atcoder" && (!task_url_list[key].startsWith("https://atcoder.jp"))) {
-				continue;
-			}
-			if (nowid == "iai" && (!task_url_list[key].startsWith("https://iai.sh.cn/"))) {
+			if (con) {
 				continue;
 			}
 
@@ -237,9 +241,9 @@ function make_task_list(task_url_list, task_name_list) {
 				<img class="task-edit" src="../images/edit.jpg" alt="edit"/>
 				<img class="task-delete" src="../images/delete.jpeg" alt="delete"/>
 			</div>`;
-			new_task.getElementsByClassName("task-name")[0].onclick = jump_to_page;
-			new_task.getElementsByClassName("task-edit")[0].onclick = edit_task;
-			new_task.getElementsByClassName("task-delete")[0].onclick = delete_task;
+			new_task.getElementsByClassName("task-name")[0].addEventListener("click", jump_to_page);
+			new_task.getElementsByClassName("task-edit")[0].addEventListener("click", edit_task);
+			new_task.getElementsByClassName("task-delete")[0].addEventListener("click", delete_task);
 			document.getElementById("task-list").appendChild(new_task);
 		}
 	});
@@ -250,13 +254,19 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
 	make_edit_task_list();
 });
 
-let task_list = document.getElementById("label-list").getElementsByTagName("div");
-for (let i = 0; i < task_list.length; i++) {
+let label_list = document.getElementById("label-list");
+for (let i = 0; i < websites.length; i++) {
+	let new_label = document.createElement("div");
+	new_label.id = websites[i][0];
+	new_label.className = "label";
+	new_label.innerHTML = websites[i][1];
+
 	function change_label() {
-		nowid = task_list[i].id;
+		nowid = websites[i][0];
 		make_task_list();
 	}
-	task_list[i].onclick = change_label;
+	new_label.addEventListener("click", change_label);
+	label_list.appendChild(new_label);
 }
 
 
@@ -358,13 +368,13 @@ function submit_change_pos() {
 	change_pos(next_pos, true);
 }
 
-document.getElementById("add-task-head").onclick = add_task_head;
-document.getElementById("add-task-tail").onclick = add_task_tail;
-document.getElementById("back").onclick = back;
-document.getElementById("submit-change-name").onclick = change_name;
-document.getElementById("submit-change-url").onclick = change_url;
-document.getElementById("pos-up").onclick = pos_up;
-document.getElementById("pos-down").onclick = pos_down;
-document.getElementById("submit-change-pos").onclick = submit_change_pos;
+document.getElementById("add-task-head").addEventListener("click", add_task_head);
+document.getElementById("add-task-tail").addEventListener("click", add_task_tail);
+document.getElementById("back").addEventListener("click", back);
+document.getElementById("submit-change-name").addEventListener("click", change_name);
+document.getElementById("submit-change-url").addEventListener("click", change_url);
+document.getElementById("pos-up").addEventListener("click", pos_up);
+document.getElementById("pos-down").addEventListener("click", pos_down);
+document.getElementById("submit-change-pos").addEventListener("click", submit_change_pos);
 
 make_task_list();
