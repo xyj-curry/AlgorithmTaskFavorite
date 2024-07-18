@@ -12,7 +12,7 @@ const websites = [
 ]
 
 function get_name(url, tabs, callback) {
-	if (/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/.test(url)) {
+	if (/https:\/\/www\.luogu\.com\.cn\/problem\/[PB]\d+/.test(url)) {
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "luogu",
@@ -25,6 +25,21 @@ function get_name(url, tabs, callback) {
 				callback(tabs[0].title);
 			} else {
 				callback("luogu_" + response.trim());
+			}
+		});
+	} else if (/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/.test(url)) {
+		chrome.tabs.sendMessage(tabs[0].id, {
+			action: "gethtml",
+			web: "luogu",
+			selector: "#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span"
+		}, function(response) {
+			if (chrome.runtime.lastError) {
+				console.error(chrome.runtime.lastError.message);
+			}
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				callback("luogu_" + url.split("/").pop() + " " + response.trim());
 			}
 		});
 	} else if (/https:\/\/codeforces\.com\/contest\/\d+\/problem\/[^\/]+/.test(url)) {

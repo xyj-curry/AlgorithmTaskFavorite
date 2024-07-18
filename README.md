@@ -1,4 +1,6 @@
 # AlgorithmTaskFavorite
+AlgorithmTaskFavorite 是一个收藏算法题的Chromium插件。
+
 AlgorithmTaskFavorite 可以收藏网站，类似浏览器里的收藏夹。收藏特定网站的题目时插件可以自动识别题目名称和标识，并可以按照不同网站分类。
 
 ## 使用方法
