@@ -8,11 +8,12 @@ const websites = [
 	["codeforces", "Codeforces", "https://codeforces.com"],
 	["atcoder", "Atcoder", "https://atcoder.jp"],
 	["iai", "iai", "https://iai.sh.cn"],
-	["vjudge", "vjudge", "https://vjudge.net"]
+	["vjudge", "vjudge", "https://vjudge.net"],
+	["cf_gym", "CF GYM", "https://codeforces.com/gym"]
 ]
 
 function get_name(url, tabs, callback) {
-	if (/https:\/\/www\.luogu\.com\.cn\/problem\/[PB]\d+/.test(url)) {
+	if (/https:\/\/www\.luogu\.com\.cn\/problem\/[PB]\d+/.test(url)) { //luogu PB task
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "luogu",
@@ -27,7 +28,7 @@ function get_name(url, tabs, callback) {
 				callback("luogu_" + response.trim());
 			}
 		});
-	} else if (/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/.test(url)) {
+	} else if (/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/.test(url)) { //luogu else task
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "luogu",
@@ -42,7 +43,7 @@ function get_name(url, tabs, callback) {
 				callback("luogu_" + url.split("/").pop() + " " + response.trim());
 			}
 		});
-	} else if (/https:\/\/codeforces\.com\/contest\/\d+\/problem\/[^\/]+/.test(url)) {
+	} else if (/https:\/\/codeforces\.com\/contest\/\d+\/problem\/[^\/]+/.test(url)) { //codeforces
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "codeforces",
@@ -63,7 +64,22 @@ function get_name(url, tabs, callback) {
 				callback("CF_" + ans + temp.join("."));
 			}
 		});
-	} else if (/https:\/\/atcoder\.jp\/contests\/[^\/]+\/tasks\/[^\/]+/.test(url)) {
+	} else if (/https:\/\/codeforces\.com\/contest\/\d+/.test(url)) { //codeforces contest
+		chrome.tabs.sendMessage(tabs[0].id, {
+			action: "gethtml",
+			web: "codeforcesContest",
+			selector: "#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a"
+		}, function(response) {
+			if (chrome.runtime.lastError) {
+				console.error(chrome.runtime.lastError.message);
+			}
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				callback("CF_Contest-" + response.trim());
+			}
+		});
+	} else if (/https:\/\/atcoder\.jp\/contests\/[^\/]+\/tasks\/[^\/]+/.test(url)) { //atcoder
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "atcoder",
@@ -80,7 +96,7 @@ function get_name(url, tabs, callback) {
 				callback("AT_" + url.split("/").pop() + temp.join("-"));
 			}
 		});
-	} else if (/https:\/\/iai\.sh\.cn\/problem\/\d+/.test(url)) {
+	} else if (/https:\/\/iai\.sh\.cn\/problem\/\d+/.test(url)) { //iai
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "iai",
@@ -95,7 +111,7 @@ function get_name(url, tabs, callback) {
 				callback("iai_" + url.split("/").pop() + " " + response.trim());
 			}
 		});
-	} else if (/https:\/\/vjudge\.net\/problem\/[^\/]+/.test(url)) {
+	} else if (/https:\/\/vjudge\.net\/problem\/[^\/]+/.test(url)) { //vjudge
 		chrome.tabs.sendMessage(tabs[0].id, {
 			action: "gethtml",
 			web: "vjudge",
@@ -108,6 +124,42 @@ function get_name(url, tabs, callback) {
 				callback(tabs[0].title);
 			} else {
 				callback("vjudge_" + url.split("/").pop() + " " + response.trim());
+			}
+		});
+	} else if (/https:\/\/codeforces\.com\/gym\/\d+\/problem\/[^\/]+/.test(url)) { //gym
+		chrome.tabs.sendMessage(tabs[0].id, {
+			action: "gethtml",
+			web: "cf_gym",
+			selector: "#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title"
+		}, function(response) {
+			if (chrome.runtime.lastError) {
+				console.error(chrome.runtime.lastError.message);
+			}
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				let temp = url.split("/");
+				let ans = temp.pop();
+				temp.pop();
+				ans = temp.pop() + ans;
+				temp = response.trim().split(".");
+				temp.shift();
+				callback("CF_GYM_" + ans + temp.join("."));
+			}
+		});
+	} else if (/https:\/\/codeforces\.com\/gym\/\d+/.test(url)) { //gym dashboard
+		chrome.tabs.sendMessage(tabs[0].id, {
+			action: "gethtml",
+			web: "cf_gym_dashboard",
+			selector: "#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a"
+		}, function(response) {
+			if (chrome.runtime.lastError) {
+				console.error(chrome.runtime.lastError.message);
+			}
+			if (response.trim() == "") {
+				callback(tabs[0].title);
+			} else {
+				callback("CF_GYM_Dashboard-" + response.trim());
 			}
 		});
 	} else {
@@ -219,15 +271,22 @@ function make_task_list(task_url_list, task_name_list) {
 		let len = 0;
 		document.getElementById("task-list").innerHTML = "";
 		for (let key in task_url_list) {
-			let con = false;
-			for (let i = 1; i < websites.length; i++) {
-				if (nowid == websites[i][0] && (!task_url_list[key].startsWith(websites[i][2]))) {
-					con = true;
-					break;
+			if (nowid != "all") {
+				let tmp = 0,
+					realpre;
+				for (let i = 1; i < websites.length; i++) {
+					if (websites[i][0] == nowid) {
+						realpre = websites[i][2];
+					}
+					if (task_url_list[key].startsWith(websites[i][2])) {
+						if (websites[i][2].startsWith(websites[tmp][2]) || tmp == 0) {
+							tmp = i;
+						}
+					}
 				}
-			}
-			if (con) {
-				continue;
+				if (tmp == 0 || websites[tmp][2] != realpre) {
+					continue;
+				}
 			}
 
 			function jump_to_page() {

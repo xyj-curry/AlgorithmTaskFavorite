@@ -15,17 +15,18 @@ AlgorithmTaskFavorite 可以收藏网站，类似浏览器里的收藏夹。收�
 
 第三个框会显示所有你收藏的题目。左边数字是标号，如果你选择除`all`以外的任意标签会有一个括号，括号外是在选择网站的题目内的排名，括号内是在所有题目内的排名。右边是题目标签点击文字部分会跳转至相应网页，后面两个图标分别是**编辑**和**删除**。
 
-编辑页面上面`重命名`和`重命url`显示的是当前的名称和url，修改后按确认立即生效，url如果没加协议名(如https、http等)自动加上https://。下面是修改位置前面的框显示的是当前位置及其上下题目，红色的是当前题目，下面的输入框可以直接输入位置，按确认立即生效，后面的上和下分别可以使题目上升和下降一位。
+编辑页面上面`重命名`和`修改url`显示的是当前的名称和url，修改后按确认立即生效，url如果没加协议名(如https、http等)自动加上https://。下面是修改位置前面的框显示的是当前位置及其上下题目，红色的是当前题目，下面的输入框可以直接输入位置，按确认立即生效，后面的上和下分别可以使题目上升和下降一位。
 
 ## 支持网站
-|网站									|分类标签	|自动识别题目	|
-|---------------------------------------|-------|-----------|
-|[QQ docs](https://docs.qq.com)			|✔		|❌			|
-|[洛谷](https://www.luogu.com.cn)		|✔		|✔			|
-|[Codeforces](https://codeforces.com)	|✔		|✔			|
-|[AtCoder](https://atcoder.jp)			|✔		|✔			|
-|[iai](https://iai.sh.cn)				|✔		|✔			|
-|[vjudge](https://vjudge.net)			|✔		|✔			|
+|网站											|分类标签	|自动识别题目	|
+|-----------------------------------------------|-------|-----------|
+|[QQ docs](https://docs.qq.com)					|✔		|❌			|
+|[洛谷](https://www.luogu.com.cn)				|✔		|✔			|
+|[Codeforces](https://codeforces.com)			|✔		|✔			|
+|[AtCoder](https://atcoder.jp)					|✔		|✔			|
+|[iai](https://iai.sh.cn)						|✔		|✔			|
+|[vjudge](https://vjudge.net)					|✔		|✔			|
+|[Codeforces GYM](https://codeforces.com/gyms)	|✔		|✔			|
 
 ## LICENSE
 Copyright 2024 xyj-curry.
