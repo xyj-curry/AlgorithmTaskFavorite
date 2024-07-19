@@ -9,162 +9,141 @@ const websites = [
 	["atcoder", "Atcoder", "https://atcoder.jp"],
 	["iai", "iai", "https://iai.sh.cn"],
 	["vjudge", "vjudge", "https://vjudge.net"],
-	["cf_gym", "CF GYM", "https://codeforces.com/gym"]
+	["cf_gym", "CF GYM", "https://codeforces.com/gym"],
+	["luogu_training", "LG_training", "https://www.luogu.com.cn/training"],
+	["poj", "POJ", "http://poj.org"]
 ]
 
-function get_name(url, tabs, callback) {
-	if (/https:\/\/www\.luogu\.com\.cn\/problem\/[PB]\d+/.test(url)) { //luogu PB task
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "luogu",
-			selector: "#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				callback("luogu_" + response.trim());
-			}
-		});
-	} else if (/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/.test(url)) { //luogu else task
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "luogu",
-			selector: "#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				callback("luogu_" + url.split("/").pop() + " " + response.trim());
-			}
-		});
-	} else if (/https:\/\/codeforces\.com\/contest\/\d+\/problem\/[^\/]+/.test(url)) { //codeforces
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "codeforces",
-			selector: "#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				let temp = url.split("/");
-				let ans = temp.pop();
-				temp.pop();
-				ans = temp.pop() + ans;
-				temp = response.trim().split(".");
-				temp.shift();
-				callback("CF_" + ans + temp.join("."));
-			}
-		});
-	} else if (/https:\/\/codeforces\.com\/contest\/\d+/.test(url)) { //codeforces contest
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "codeforcesContest",
-			selector: "#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				callback("CF_Contest-" + response.trim());
-			}
-		});
-	} else if (/https:\/\/atcoder\.jp\/contests\/[^\/]+\/tasks\/[^\/]+/.test(url)) { //atcoder
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "atcoder",
-			selector: "#main-container > div.row > div:nth-child(2) > span.h2"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				let temp = response.trim().split("-");
-				temp.shift();
-				callback("AT_" + url.split("/").pop() + temp.join("-"));
-			}
-		});
-	} else if (/https:\/\/iai\.sh\.cn\/problem\/\d+/.test(url)) { //iai
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "iai",
-			selector: "#__next > div > div > div.pageBody > div > div.ant-col.ant-col-18 > div:nth-child(1) > div > div:nth-child(1) > h2"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				callback("iai_" + url.split("/").pop() + " " + response.trim());
-			}
-		});
-	} else if (/https:\/\/vjudge\.net\/problem\/[^\/]+/.test(url)) { //vjudge
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "vjudge",
-			selector: "#prob-title > h2"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				callback("vjudge_" + url.split("/").pop() + " " + response.trim());
-			}
-		});
-	} else if (/https:\/\/codeforces\.com\/gym\/\d+\/problem\/[^\/]+/.test(url)) { //gym
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "cf_gym",
-			selector: "#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				let temp = url.split("/");
-				let ans = temp.pop();
-				temp.pop();
-				ans = temp.pop() + ans;
-				temp = response.trim().split(".");
-				temp.shift();
-				callback("CF_GYM_" + ans + temp.join("."));
-			}
-		});
-	} else if (/https:\/\/codeforces\.com\/gym\/\d+/.test(url)) { //gym dashboard
-		chrome.tabs.sendMessage(tabs[0].id, {
-			action: "gethtml",
-			web: "cf_gym_dashboard",
-			selector: "#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a"
-		}, function(response) {
-			if (chrome.runtime.lastError) {
-				console.error(chrome.runtime.lastError.message);
-			}
-			if (response.trim() == "") {
-				callback(tabs[0].title);
-			} else {
-				callback("CF_GYM_Dashboard-" + response.trim());
-			}
-		});
-	} else {
-		callback(tabs[0].title);
+const websites_get_name = [
+	[
+		/https:\/\/www\.luogu\.com\.cn\/problem\/[PB]\d+/,
+		"luoguPB",
+		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span",
+		function(response, url) {
+			return "luogu_" + response.trim();
+		}
+	],
+	[
+		/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/,
+		"luoguElse",
+		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span",
+		function(response, url) {
+			return "luogu_" + url.split("/").pop() + " " + response.trim();
+		}
+	],
+	[
+		/https:\/\/codeforces\.com\/contest\/\d+\/problem\/[^\/]+/,
+		"codeforces",
+		"#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title",
+		function(response, url) {
+			let temp = url.split("/");
+			let ans = temp.pop();
+			temp.pop();
+			ans = temp.pop() + ans;
+			temp = response.trim().split(".");
+			temp.shift();
+			return "CF_" + ans + temp.join(".");
+		}
+	],
+	[
+		/https:\/\/codeforces\.com\/contest\/\d+/,
+		"codeforcesContest",
+		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
+		function(response, url) {
+			return "CF_Contest-" + response.trim();
+		}
+	],
+	[
+		/https:\/\/atcoder\.jp\/contests\/[^\/]+\/tasks\/[^\/]+/,
+		"atcoder",
+		"#main-container > div.row > div:nth-child(2) > span.h2",
+		function(response, url) {
+			let temp = response.trim().split("-");
+			temp.shift();
+			return "AT_" + url.split("/").pop() + temp.join("-");
+		}
+	],
+	[
+		/https:\/\/iai\.sh\.cn\/problem\/\d+/,
+		"iai",
+		"#__next > div > div > div.pageBody > div > div.ant-col.ant-col-18 > div:nth-child(1) > div > div:nth-child(1) > h2",
+		function(response, url) {
+			let temp = response.trim().split("-");
+			temp.shift();
+			return "iai_" + url.split("/").pop() + " " + response.trim();
+		}
+	],
+	[
+		/https:\/\/vjudge\.net\/problem\/[^\/]+/,
+		"vjudge",
+		"#prob-title > h2",
+		function(response, url) {
+			let temp = response.trim().split("-");
+			temp.shift();
+			return "vjudge_" + url.split("/").pop() + " " + response.trim();
+		}
+	],
+	[
+		/https:\/\/codeforces\.com\/gym\/\d+\/problem\/[^\/]+/,
+		"cf_gym",
+		"#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title",
+		function(response, url) {
+			let temp = url.split("/");
+			let ans = temp.pop();
+			temp.pop();
+			ans = temp.pop() + ans;
+			temp = response.trim().split(".");
+			temp.shift();
+			return "CF_GYM_" + ans + temp.join(".");
+		}
+	],
+	[
+		/https:\/\/codeforces\.com\/gym\/\d+/,
+		"cf_gym_dashboard",
+		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
+		function(response, url) {
+			return "CF_GYM_Dashboard-" + response.trim();
+		}
+	],
+	[
+		/https:\/\/www\.luogu\.com\.cn\/training\/\d+.+/,
+		"luogu_training",
+		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
+		function(response, url) {
+			return "LG_training_" + url.split("#")[0].split("/").pop() + " " + response.trim();
+		}
+	],
+	[
+		/http:\/\/poj\.org\/problem\?id=\d+/,
+		"poj",
+		"body > table:nth-child(3) > tbody > tr > td > div.ptt",
+		function(response, url) {
+			return "poj_" + url.split("=").pop() + " " + response.trim();
+		}
+	],
+]
+
+function get_name(tabs, callback) {
+	for (let i = 0; i < websites_get_name.length; i++) {
+		if (websites_get_name[i][0].test(tabs[0].url)) {
+			chrome.tabs.sendMessage(tabs[0].id, {
+				action: "gethtml",
+				web: websites_get_name[i][1],
+				selector: websites_get_name[i][2]
+			}, function(response) {
+				if (chrome.runtime.lastError) {
+					console.error(chrome.runtime.lastError.message);
+				}
+				if (typeof(response) != "string" || response.trim() == "") {
+					callback(tabs[0].title);
+				} else {
+					callback(websites_get_name[i][3](response, tabs[0].url));
+				}
+			});
+			return;
+		}
 	}
+	callback(tabs[0].title);
 }
 
 function add_task(pos) {
@@ -173,7 +152,7 @@ function add_task(pos) {
 		currentWindow: true
 	}, function(tabs) {
 		let url = tabs[0].url;
-		get_name(url, tabs, function(name) {
+		get_name(tabs, function(name) {
 			chrome.storage.local.get({
 				task_url_list: {},
 				task_name_list: {}

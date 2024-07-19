@@ -15,7 +15,8 @@
 			"https://codeforces.com/*",
 			"https://atcoder.jp/*",
 			"https://iai.sh.cn/*",
-			"https://vjudge.net/*"
+			"https://vjudge.net/*",
+			"http://poj.org/*"
 		]
 	}],
 	"action": {
