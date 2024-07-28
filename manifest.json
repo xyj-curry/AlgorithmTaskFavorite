@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Algorithm Task Favorite",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Save algorithm questions from all websites",
 	"icons": {
 		"48": "images/logo.png"
