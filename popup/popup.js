@@ -1,127 +1,10 @@
+import {
+	websites,
+	websites_get_name
+} from "./globals.js";
+
 var nowid = "all";
 var noweditid = -1;
-
-const websites = [
-	["all", "All"],
-	["qqdocs", "QQ docs", "https://docs.qq.com"],
-	["luogu", "luogu", "https://www.luogu.com.cn"],
-	["codeforces", "Codeforces", "https://codeforces.com"],
-	["atcoder", "Atcoder", "https://atcoder.jp"],
-	["iai", "iai", "https://iai.sh.cn"],
-	["vjudge", "vjudge", "https://vjudge.net"],
-	["cf_gym", "CF GYM", "https://codeforces.com/gym"],
-	["luogu_training", "LG_training", "https://www.luogu.com.cn/training"],
-	["poj", "POJ", "http://poj.org"]
-]
-
-const websites_get_name = [
-	[
-		/https:\/\/www\.luogu\.com\.cn\/problem\/[PB]\d+/,
-		"luoguPB",
-		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span",
-		function(response, url) {
-			return "luogu_" + response.trim();
-		}
-	],
-	[
-		/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/,
-		"luoguElse",
-		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span",
-		function(response, url) {
-			return "luogu_" + url.split("/").pop() + " " + response.trim();
-		}
-	],
-	[
-		/https:\/\/codeforces\.com\/contest\/\d+\/problem\/[^\/]+/,
-		"codeforces",
-		"#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title",
-		function(response, url) {
-			let temp = url.split("/");
-			let ans = temp.pop();
-			temp.pop();
-			ans = temp.pop() + ans;
-			temp = response.trim().split(".");
-			temp.shift();
-			return "CF_" + ans + temp.join(".");
-		}
-	],
-	[
-		/https:\/\/codeforces\.com\/contest\/\d+/,
-		"codeforcesContest",
-		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
-		function(response, url) {
-			return "CF_Contest-" + response.trim();
-		}
-	],
-	[
-		/https:\/\/atcoder\.jp\/contests\/[^\/]+\/tasks\/[^\/]+/,
-		"atcoder",
-		"#main-container > div.row > div:nth-child(2) > span.h2",
-		function(response, url) {
-			let temp = response.trim().split("-");
-			temp.shift();
-			return "AT_" + url.split("/").pop() + temp.join("-");
-		}
-	],
-	[
-		/https:\/\/iai\.sh\.cn\/problem\/\d+/,
-		"iai",
-		"#__next > div > div > div.pageBody > div > div.ant-col.ant-col-18 > div:nth-child(1) > div > div:nth-child(1) > h2",
-		function(response, url) {
-			let temp = response.trim().split("-");
-			temp.shift();
-			return "iai_" + url.split("/").pop() + " " + response.trim();
-		}
-	],
-	[
-		/https:\/\/vjudge\.net\/problem\/[^\/]+/,
-		"vjudge",
-		"#prob-title > h2",
-		function(response, url) {
-			let temp = response.trim().split("-");
-			temp.shift();
-			return "vjudge_" + url.split("/").pop() + " " + response.trim();
-		}
-	],
-	[
-		/https:\/\/codeforces\.com\/gym\/\d+\/problem\/[^\/]+/,
-		"cf_gym",
-		"#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title",
-		function(response, url) {
-			let temp = url.split("/");
-			let ans = temp.pop();
-			temp.pop();
-			ans = temp.pop() + ans;
-			temp = response.trim().split(".");
-			temp.shift();
-			return "CF_GYM_" + ans + temp.join(".");
-		}
-	],
-	[
-		/https:\/\/codeforces\.com\/gym\/\d+/,
-		"cf_gym_dashboard",
-		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
-		function(response, url) {
-			return "CF_GYM_Dashboard-" + response.trim();
-		}
-	],
-	[
-		/https:\/\/www\.luogu\.com\.cn\/training\/\d+.+/,
-		"luogu_training",
-		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
-		function(response, url) {
-			return "LG_training_" + url.split("#")[0].split("/").pop() + " " + response.trim();
-		}
-	],
-	[
-		/http:\/\/poj\.org\/problem\?id=\d+/,
-		"poj",
-		"body > table:nth-child(3) > tbody > tr > td > div.ptt",
-		function(response, url) {
-			return "poj_" + url.split("=").pop() + " " + response.trim();
-		}
-	],
-]
 
 function get_name(tabs, callback) {
 	for (let i = 0; i < websites_get_name.length; i++) {
@@ -204,6 +87,7 @@ function back() {
 	document.getElementById("label-list").style.display = "flex";
 	document.getElementById("task-list").style.display = "flex";
 	document.getElementById("edit-task").style.display = "none";
+	document.getElementById("import-export-task-list").style.display = "";
 	noweditid = -1;
 }
 
@@ -309,6 +193,7 @@ function make_task_list(task_url_list, task_name_list) {
 				document.getElementById("add-task-tail").style.display = "none";
 				document.getElementById("label-list").style.display = "none";
 				document.getElementById("task-list").style.display = "none";
+				document.getElementById("import-export-task-list").style.display = "none";
 				document.getElementById("edit-task").style.display = "flex";
 				noweditid = key;
 				document.getElementById("change-name").value = task_name_list[key];
@@ -347,13 +232,15 @@ for (let i = 0; i < websites.length; i++) {
 	new_label.innerHTML = websites[i][1];
 
 	function change_label() {
+		document.getElementById(nowid).style.backgroundColor = "";
 		nowid = websites[i][0];
+		new_label.style.backgroundColor = "grey";
 		make_task_list();
 	}
 	new_label.addEventListener("click", change_label);
 	label_list.appendChild(new_label);
 }
-
+document.getElementById("all").style.backgroundColor = "grey";
 
 function change_name() {
 	chrome.storage.local.get({
@@ -392,7 +279,7 @@ function change_pos(next_pos, canalert) {
 	}, function(result) {
 		let new_task_url_list = result.task_url_list;
 		let new_task_name_list = result.task_name_list;
-		if (parseInt(next_pos) > parseInt(Object.keys(new_task_name_list).length)) {
+		if (next_pos > parseInt(Object.keys(new_task_name_list).length)) {
 			if (canalert) {
 				alert("输入的数请小于题目数量");
 			}
@@ -453,13 +340,179 @@ function submit_change_pos() {
 	change_pos(next_pos, true);
 }
 
+function export_task_list() {
+	chrome.storage.local.get({
+		task_url_list: {},
+		task_name_list: {}
+	}, function(result) {
+		let task_url_list = result.task_url_list;
+		let task_name_list = result.task_name_list;
+		let task_list = {};
+		for (let i in task_name_list) {
+			task_list[i] = [
+				task_name_list[i],
+				task_url_list[i]
+			];
+		}
+		const blob = new Blob([JSON.stringify(task_list)], {
+			'type': 'application/json'
+		});
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = 'task_list.json';
+		a.style =
+			'display: none';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	});
+}
+
+function import_task_list_cover() {
+	const input = document.createElement('input');
+	input.type = 'file';
+	input.style = 'display: none';
+	input.accept = '.json';
+	input.addEventListener("change", function() {
+		const file = input.files[0];
+		const reader = new FileReader();
+		reader.addEventListener("loadend", function() {
+			let task_list = JSON.parse(reader.result);
+			if (!task_list) {
+				alert("导入失败");
+				return;
+			}
+			let new_task_name_list = {};
+			let new_task_url_list = {};
+			for (let i in task_list) {
+				new_task_name_list[i] = task_list[i][0];
+				new_task_url_list[i] = task_list[i][1];
+			}
+			chrome.storage.local.set({
+				task_name_list: new_task_name_list,
+				task_url_list: new_task_url_list
+			});
+		});
+		reader.readAsText(file);
+	});
+	document.body.appendChild(input);
+	input.click()
+	document.body.removeChild(input);
+}
+
+function include(task_list, task_name, task_url) {
+	for (let i = 0; i < task_list.length; i++) {
+		if (task_list[i][0] == task_name && task_list[i][1] == task_url) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function import_task_list_insert() {
+	const input = document.createElement('input');
+	input.type = 'file';
+	input.style = 'display: none';
+	input.accept = '.json';
+	input.addEventListener("change", function() {
+		const file = input.files[0];
+		const reader = new FileReader();
+		reader.addEventListener("loadend", function() {
+			let task_list = JSON.parse(reader.result);
+			if (!task_list) {
+				alert("导入失败");
+				return;
+			}
+			let index = document.getElementById("import-task-list-index").value;
+			if (!(/^[0-9]+$/.test(index))) {
+				alert("请输入一个正整数");
+				return;
+			}
+			index = parseInt(index);
+			if (index <= 0) {
+				alert("请输入一个正整数");
+				return;
+			}
+			chrome.storage.local.get({
+				task_name_list: {},
+				task_url_list: {}
+			}, function(result) {
+				let task_name_list = result.task_name_list;
+				let task_url_list = result.task_url_list;
+				let new_task_name_list = {};
+				let new_task_url_list = {};
+				if (index != 1 && index > parseInt(Object.keys(task_name_list).length)) {
+					alert("输入的数请小于题目数量");
+					return;
+				}
+				let task = [];
+				let tot = 0;
+				for (let i = 1; i < index; i++) {
+					if (include(task, task_name_list[i], task_url_list[i])) {
+						continue;
+					}
+					task.push([task_name_list[i], task_url_list[i]]);
+					tot++;
+					new_task_name_list[tot] = task_name_list[i];
+					new_task_url_list[tot] = task_url_list[i];
+				}
+				for (let i in task_list) {
+					if (include(task, task_list[i][0], task_list[i][1])) {
+						continue;
+					}
+					task.push([task_list[i][0], task_list[i][1]]);
+					tot++;
+					new_task_name_list[tot] = task_list[i][0];
+					new_task_url_list[tot] = task_list[i][1];
+				}
+				for (let i = index; i <= parseInt(Object.keys(task_name_list).length); i++) {
+					if (include(task, task_name_list[i], task_url_list[i])) {
+						continue;
+					}
+					task.push([task_name_list[i], task_url_list[i]]);
+					tot++;
+					new_task_name_list[tot] = task_name_list[i];
+					new_task_url_list[tot] = task_url_list[i];
+				}
+				chrome.storage.local.set({
+					task_name_list: new_task_name_list,
+					task_url_list: new_task_url_list
+				});
+			});
+		});
+		reader.readAsText(file);
+	});
+	document.body.appendChild(input);
+	input.click();
+	document.body.removeChild(input);
+}
+
 document.getElementById("add-task-head").addEventListener("click", add_task_head);
 document.getElementById("add-task-tail").addEventListener("click", add_task_tail);
 document.getElementById("back").addEventListener("click", back);
 document.getElementById("submit-change-name").addEventListener("click", change_name);
+document.getElementById("change-name").addEventListener("keydown", function(event) {
+	if (event.key == "Enter") {
+		change_name();
+	}
+});
 document.getElementById("submit-change-url").addEventListener("click", change_url);
+document.getElementById("change-url").addEventListener("keydown", function(event) {
+	if (event.key == "Enter") {
+		change_url();
+	}
+});
 document.getElementById("pos-up").addEventListener("click", pos_up);
 document.getElementById("pos-down").addEventListener("click", pos_down);
 document.getElementById("submit-change-pos").addEventListener("click", submit_change_pos);
+document.getElementById("change-pos").addEventListener("keydown", function(event) {
+	if (event.key == "Enter") {
+		submit_change_pos();
+	}
+});
+document.getElementById("export-task-list").addEventListener("click", export_task_list);
+document.getElementById("import-task-list-cover").addEventListener("click", import_task_list_cover);
+document.getElementById("import-task-list-insert").addEventListener("click", import_task_list_insert);
 
 make_task_list();

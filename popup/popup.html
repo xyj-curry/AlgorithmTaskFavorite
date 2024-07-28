@@ -14,6 +14,17 @@
 		</div>
 		<div id="task-list">
 		</div>
+		<div id="import-export-task-list">
+			<div style="display: flex;">
+				<div id="export-task-list">导出题目列表</div>
+				<div id="import-task-list-cover">导入题目列表(覆盖)</div>
+			</div>
+			<div style="display: flex;">
+				<div id="import-task-list-insert">导入题目列表(插入)</div>
+				<span style="font-size: 20px; font-weight: bold; align-items: center;">位置:</span>
+				<input id="import-task-list-index" type="text" />
+			</div>
+		</div>
 		<div id="edit-task">
 			<img src="../images/back.jpg" alt="返回" id="back" />
 			<div>
@@ -39,6 +50,6 @@
 				<img id="pos-down" src="../images/down.jpg" style="border: 2px solid black; " alt="下" />
 			</div>
 		</div>
-		<script src="popup.js"></script>
+		<script type="module" src="popup.js"></script>
 	</body>
 </html>
