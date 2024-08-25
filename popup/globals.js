@@ -65,8 +65,6 @@ export const websites_get_name = [
 		"iai",
 		"#__next > div > div > div.pageBody > div > div.ant-col.ant-col-18 > div:nth-child(1) > div > div:nth-child(1) > h2",
 		function(response, url) {
-			let temp = response.trim().split("-");
-			temp.shift();
 			return "iai_" + url.split("/").pop() + " " + response.trim();
 		}
 	],
@@ -75,14 +73,12 @@ export const websites_get_name = [
 		"vjudge",
 		"#prob-title > h2",
 		function(response, url) {
-			let temp = response.trim().split("-");
-			temp.shift();
-			return "vjudge_" + url.split("/").pop() + " " + response.trim();
+			return "vjudge_" + url.trim().split("#")[0].split("/").pop() + " " + response.trim();
 		}
 	],
 	[
 		/https:\/\/codeforces\.com\/gym\/\d+\/problem\/[^\/]+/,
-		"cf_gym",
+		"codeforcesGym",
 		"#pageContent > div.problemindexholder > div.ttypography > div > div.header > div.title",
 		function(response, url) {
 			let temp = url.split("/");
@@ -91,12 +87,12 @@ export const websites_get_name = [
 			ans = temp.pop() + ans;
 			temp = response.trim().split(".");
 			temp.shift();
-			return "CF_GYM_" + ans + temp.join(".");
+			return "CF_GYM-" + ans + temp.join(".");
 		}
 	],
 	[
 		/https:\/\/codeforces\.com\/gym\/\d+/,
-		"cf_gym_dashboard",
+		"codeforcesGymDashboard",
 		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
 		function(response, url) {
 			return "CF_GYM_Dashboard-" + response.trim();
@@ -104,10 +100,10 @@ export const websites_get_name = [
 	],
 	[
 		/https:\/\/www\.luogu\.com\.cn\/training\/\d+.*/,
-		"luogu_training",
+		"luoguTraining",
 		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1",
 		function(response, url) {
-			return "LG_training_" + url.split("#")[0].split("/").pop() + " " + response.trim();
+			return "LG_training-" + url.split("#")[0].split("/").pop() + " " + response.trim();
 		}
 	],
 	[
@@ -116,6 +112,14 @@ export const websites_get_name = [
 		"body > table:nth-child(3) > tbody > tr > td > div.ptt",
 		function(response, url) {
 			return "poj_" + url.split("=").pop() + " " + response.trim();
+		}
+	],
+	[
+		/https:\/\/www\.luogu\.com\.cn\/contest\/\d+.*/,
+		"luoguContest",
+		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1",
+		function(response, url) {
+			return "LG_Contest-" + url.split("#")[0].split("/").pop() + " " + response.trim();
 		}
 	],
 ];

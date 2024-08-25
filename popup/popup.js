@@ -105,26 +105,40 @@ function make_edit_task_list() {
 		if (editid != 1) {
 			let new_task = document.createElement("div");
 			new_task.style = "display: flex;";
-			new_task.innerHTML = `<div style="font-size: 20px; width: 45px">${editid-1}、</div>
+			new_task.innerHTML = `<div class="task_number">${editid-1}</div>
 			<div class="edit-task-name">${task_name_list[editid-1]}</div>`
 			edit_task_list.appendChild(new_task);
+			let task_separator = document.createElement("div");
+			task_separator.className = "task-separator";
+			task_separator.innerHTML = "1";
+			edit_task_list.appendChild(task_separator);
 		}
 		let new_task = document.createElement("div");
-		new_task.style = "display: flex;";
-		new_task.innerHTML = `<div style="font-size: 20px; color: red; width: 45px">${editid}、</div>
-			<div class="edit-task-name" style="color: red;">${task_name_list[editid]}</div>`
+		new_task.style = "display: flex; color: red;";
+		new_task.innerHTML = `<div class="task_number">${editid}</div>
+			<div class="edit-task-name">${task_name_list[editid]}</div>`
 		edit_task_list.appendChild(new_task);
+		let task_separator = document.createElement("div");
+		task_separator.className = "task-separator";
+		task_separator.innerHTML = "1";
+		edit_task_list.appendChild(task_separator);
 		if (editid != Object.keys(task_name_list).length) {
 			let new_task = document.createElement("div");
 			new_task.style = "display: flex;";
-			new_task.innerHTML = `<div style="font-size: 20px; width: 45px">${editid+1}、</div>
+			new_task.innerHTML = `<div class="task_number">${editid+1}</div>
 			<div class="edit-task-name">${task_name_list[editid+1]}</div>`
 			edit_task_list.appendChild(new_task);
+			let task_separator = document.createElement("div");
+			task_separator.className = "task-separator";
+			task_separator.innerHTML = "1";
+			edit_task_list.appendChild(task_separator);
 		}
+		edit_task_list.removeChild(edit_task_list.lastChild);
 	});
 }
 
 function make_task_list(task_url_list, task_name_list) {
+	let tesk_list = document.getElementById("task-list");
 	chrome.storage.local.get({
 		task_url_list: {},
 		task_name_list: {}
@@ -173,10 +187,8 @@ function make_task_list(task_url_list, task_name_list) {
 							have = true;
 						}
 						if (have) {
-							new_task_name_list[parseInt(nkey)] = new_task_name_list[parseInt(nkey) +
-								1];
-							new_task_url_list[parseInt(nkey)] = new_task_url_list[parseInt(nkey) +
-								1];
+							new_task_name_list[parseInt(nkey)] = new_task_name_list[parseInt(nkey) + 1];
+							new_task_url_list[parseInt(nkey)] = new_task_url_list[parseInt(nkey) + 1];
 						}
 					}
 					delete new_task_name_list[Object.keys(new_task_name_list).length];
@@ -205,7 +217,7 @@ function make_task_list(task_url_list, task_name_list) {
 			len++;
 			let new_task = document.createElement("div");
 			new_task.style = "display: flex;";
-			new_task.innerHTML = `<div style="font-size: 20px; word-wrap: break-word; width: 45px">${nowid=="all"?key:`${len}(${key})`}、</div>
+			new_task.innerHTML = `<div class="task_number">${nowid=="all"?key:`${len}<br>(${key})`}</div>
 			<div class="task">
 				<span class="task-name"}>${task_name_list[key]}</span>
 				<img class="task-edit" src="../images/edit.jpg" alt="edit"/>
@@ -214,7 +226,14 @@ function make_task_list(task_url_list, task_name_list) {
 			new_task.getElementsByClassName("task-name")[0].addEventListener("click", jump_to_page);
 			new_task.getElementsByClassName("task-edit")[0].addEventListener("click", edit_task);
 			new_task.getElementsByClassName("task-delete")[0].addEventListener("click", delete_task);
-			document.getElementById("task-list").appendChild(new_task);
+			tesk_list.appendChild(new_task);
+			let task_separator = document.createElement("div");
+			task_separator.className = "task-separator";
+			task_separator.innerHTML = "1";
+			tesk_list.appendChild(task_separator);
+		}
+		if (tesk_list.innerHTML != "") {
+			tesk_list.removeChild(tesk_list.lastChild);
 		}
 	});
 }

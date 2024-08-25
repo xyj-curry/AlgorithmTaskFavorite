@@ -1,22 +1,26 @@
 #add-task-head {
-	height: 40px;
+	height: 39px;
 	width: 197px;
 	border: 3px solid black;
 	font-size: 30px;
-	text-align: center;
 	margin-bottom: 1px;
 	margin-right: 1px;
+	text-align: center;
 	float: left;
+	font-family: KaiTi;
+	padding-top: 4px;
 }
 
 #add-task-tail {
-	height: 40px;
+	height: 39px;
 	width: 197px;
 	border: 3px solid black;
 	font-size: 30px;
 	text-align: center;
 	margin-bottom: 1px;
 	float: left;
+	font-family: KaiTi;
+	padding-top: 4px;
 }
 
 #label-list {
@@ -51,8 +55,6 @@
 }
 
 .task {
-	border: 2px solid black;
-	margin: 3px;
 	white-space: pre-wrap;
 	display: flex;
 	flex-direction: row;
@@ -61,7 +63,7 @@
 }
 
 .task-name {
-	width: 263px;
+	width: 265px;
 	margin: 1px;
 	font-size: 17px;
 	word-wrap: break-word;
@@ -73,6 +75,24 @@
 
 .task-delete {
 	margin: 1px;
+}
+
+.task_number {
+	font-size: 20px;
+	word-wrap: break-word;
+	width: 50px;
+	text-align: center;
+	align-self: center;
+}
+
+.task-separator {
+	height: 0px;
+	font-size: 0px;
+	border-bottom: 2px dashed black;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 #edit-task {
@@ -96,7 +116,6 @@
 	white-space: pre-wrap;
 	word-wrap: break-word;
 	font-size: 20px;
-	border: 2px solid black;
 }
 
 #import-export-task-list {
