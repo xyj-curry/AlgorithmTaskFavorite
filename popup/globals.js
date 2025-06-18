@@ -7,25 +7,20 @@ export const websites = [
 	["iai", "iai", "https://iai.sh.cn"],
 	["vjudge", "vjudge", "https://vjudge.net"],
 	["cf_gym", "CF GYM", "https://codeforces.com/gym"],
-	["luogu_training", "LG_training", "https://www.luogu.com.cn/training"],
-	["poj", "POJ", "http://poj.org"]
+	["luogu_training", "LG training", "https://www.luogu.com.cn/training"],
+	["poj", "POJ", "http://poj.org"],
+	["nowcoder", "nowcoder", "https://ac.nowcoder.com"],
+	["qoj", "QOJ", "https://qoj.ac"],
+	["cnblog", "cnblog", "https://www.cnblogs.com"]
 ];
 
 export const websites_get_name = [
 	[
-		/https:\/\/www\.luogu\.com\.cn\/problem\/[PB]\d+/,
-		"luoguPB",
-		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span",
+		/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/,
+		"luogu",
+		"#app > div.main-container.lside-nav > header > div > div > h1",
 		function(response, url) {
 			return "luogu_" + response.trim();
-		}
-	],
-	[
-		/https:\/\/www\.luogu\.com\.cn\/problem\/[^\/]+/,
-		"luoguElse",
-		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1 > span",
-		function(response, url) {
-			return "luogu_" + url.split("/").pop() + " " + response.trim();
 		}
 	],
 	[
@@ -47,7 +42,7 @@ export const websites_get_name = [
 		"codeforcesContest",
 		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
 		function(response, url) {
-			return "CF_Contest-" + response.trim();
+			return "CF-Contest_" + response.trim();
 		}
 	],
 	[
@@ -87,7 +82,7 @@ export const websites_get_name = [
 			ans = temp.pop() + ans;
 			temp = response.trim().split(".");
 			temp.shift();
-			return "CF_GYM-" + ans + temp.join(".");
+			return "CF-GYM_" + ans + temp.join(".");
 		}
 	],
 	[
@@ -95,7 +90,7 @@ export const websites_get_name = [
 		"codeforcesGymDashboard",
 		"#sidebar > div:nth-child(1) > table > tbody > tr:nth-child(1) > th > a",
 		function(response, url) {
-			return "CF_GYM_Dashboard-" + response.trim();
+			return "CF-GYM-Dashboard_" + response.trim();
 		}
 	],
 	[
@@ -103,7 +98,7 @@ export const websites_get_name = [
 		"luoguTraining",
 		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1",
 		function(response, url) {
-			return "LG_training-" + url.split("#")[0].split("/").pop() + " " + response.trim();
+			return "LG-training_" + url.split("#")[0].split("/").pop() + " " + response.trim();
 		}
 	],
 	[
@@ -119,7 +114,43 @@ export const websites_get_name = [
 		"luoguContest",
 		"#app > div.main-container > div.wrapper.wrapped.lfe-body.header-layout.normal > div.header > h1",
 		function(response, url) {
-			return "LG_Contest-" + url.split("#")[0].split("/").pop() + " " + response.trim();
+			return "LG-Contest_" + url.split("#")[0].split("/").pop() + " " + response.trim();
 		}
 	],
+	[
+		/https:\/\/ac\.nowcoder\.com\/acm\/problem\/\d+/,
+		"nowcoder",
+		"body > div.nk-container.nk-acm-container > div.header-bar > div.header-left > div",
+		function(response, url) {
+			return "NC_" + url.split("#")[0].split("/").pop() + " " + response.trim();
+		}
+	],
+	[
+		/https:\/\/qoj\.ac\/problem\/\d+/,
+		"qoj",
+		"body > div.container > div.uoj-content > h1",
+		function(response, url) {
+			let temp = response.split(".");
+			temp.shift();
+			return "qoj_" + url.split("#")[0].split("/").pop() + " " + temp.join(".").trim();
+		}
+	],
+	[
+		/https:\/\/qoj\.ac\/contest\/\d+\/problem\/\d+/,
+		"qoj",
+		"body > div.container > div.uoj-content > div.page-header.row > h1.col-md-7.text-center",
+		function(response, url) {
+			let temp = response.split(".");
+			temp.shift();
+			return "qoj_" + url.split("#")[0].split("/").pop() + " " + temp.join(".").trim();
+		}
+	],
+	[
+		/https:\/\/www\.cnblogs\.com\/[^\/]+\/p\/\d+/,
+		"cnblog",
+		"#cb_post_title_url",
+		function(response, url) {
+			return "cnblog_" + url.split("/")[3] + " " + response.trim();
+		}
+	]
 ];

@@ -31,6 +31,9 @@ AlgorithmTaskFavorite 可以收藏网站，类似浏览器里的收藏夹。收�
 |[Codeforces GYM](https://codeforces.com/gyms)				|✔		|✔			|
 |[luogu training](https://www.luogu.com.cn/training/list)	|✔		|✔			|
 |[poj](http://poj.org)										|✔		|✔			|
+|[nowcoder](https://ac.nowcoder.com/)	            		|✔		|✔			|
+|[qoj](https://qoj.ac/)										|✔		|✔			|
+|[cnblog](https://www.cnblogs.com/)										|✔		|✔			|
 
 ## LICENSE
 Copyright 2024 xyj-curry.

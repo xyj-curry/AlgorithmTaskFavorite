@@ -6,6 +6,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				sendResponse(element.firstChild.nodeValue);
 			} else if (request.web === "vjudge") {
 				sendResponse(element.childNodes[1].nodeValue);
+			} else if (request.web === "nowcoder") {
+				sendResponse(element.childNodes[2].nodeValue);
 			} else {
 				sendResponse(element.innerHTML);
 			}
