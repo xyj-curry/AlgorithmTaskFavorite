@@ -15,39 +15,38 @@
 		<div id="task-list">
 		</div>
 		<div id="import-export-task-list">
-			<div style="display: flex;">
+			<div class="flex-box">
 				<div id="export-task-list">导出题目列表</div>
 				<div id="import-task-list-cover">导入题目列表(覆盖)</div>
 			</div>
-			<div style="display: flex;">
+			<div class="flex-box">
 				<div id="import-task-list-insert">导入题目列表(插入)</div>
-				<span style="font-size: 20px; font-weight: bold; align-items: center;">位置:</span>
+				<span class="pos-span">位置:</span>
 				<input id="import-task-list-index" type="text" />
 			</div>
 		</div>
 		<div id="edit-task">
 			<img src="../images/back.jpg" alt="返回" id="back" />
 			<div>
-				<span style="font-size: 20px; font-weight: bold;">重命名:&nbsp;</span>
-				<input id="change-name" type="text" style="font-size: 20px; height: 33px;" />
+				<span class="change-input-span">重命名:&nbsp;</span>
+				<input id="change-name" class="change-input-box" type="text" />
 				<button id="submit-change-name">确认</button>
 			</div>
 			<div>
-				<span style="font-size: 20px; font-weight: bold;">修改url:&nbsp;</span>
-				<input id="change-url" type="text" style="font-size: 20px; height: 33px;" />
+				<span class="change-input-span">修改url:&nbsp;</span>
+				<input id="change-url" class="change-input-box" type="text" />
 				<button id="submit-change-url">确认</button>
 			</div>
-			<span style="font-size: 20px; font-weight: bold; margin-top: 10px;">修改位置:</span>
-			<span style="font-size: 19px; white-space: pre-wrap;">(此处显示的是当前位置及其上下题目, 红色为当前题目)</span>
+			<span id="change-pos-span1">修改位置:</span>
+			<span id="change-pos-span2">(此处显示的是当前位置及其上下题目, 红色为当前题目)</span>
 			<div id="edit-task-list">
 			</div>
 			<div>
-				<span style="font-size: 20px; font-weight: bold; align-items: center;">位置:</span>
-				<input id="change-pos" type="text" style="height: 33px; width: 177px; font-size: 20px;" />
-				<button id="submit-change-pos" style="height: 33px;">确认</button>
-				<img id="pos-up" src="../images/up.jpg" alt="上"
-					style="border: 2px solid black; margin-left: 10px; margin-right: 10px; margin-top: 10px;" />
-				<img id="pos-down" src="../images/down.jpg" style="border: 2px solid black; " alt="下" />
+				<span class="pos-span">位置:</span>
+				<input id="change-pos" type="text" />
+				<button id="submit-change-pos">确认</button>
+				<img id="pos-up" src="../images/up.jpg" alt="上" />
+				<img id="pos-down" src="../images/down.jpg" alt="下" />
 			</div>
 		</div>
 		<script type="module" src="popup.js"></script>

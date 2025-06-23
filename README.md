@@ -23,7 +23,7 @@ AlgorithmTaskFavorite 可以收藏网站，类似浏览器里的收藏夹。收�
 |网站														|分类标签	|自动识别题目	|
 |-----------------------------------------------------------|-------|-----------|
 |[QQ docs](https://docs.qq.com)								|✔		|❌			|
-|[洛谷](https://www.luogu.com.cn)							|✔		|✔			|
+|[luogu](https://www.luogu.com.cn)							|✔		|✔			|
 |[Codeforces](https://codeforces.com)						|✔		|✔			|
 |[AtCoder](https://atcoder.jp)								|✔		|✔			|
 |[iai](https://iai.sh.cn)									|✔		|✔			|

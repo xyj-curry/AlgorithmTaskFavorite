@@ -91,6 +91,22 @@ function back() {
 	noweditid = -1;
 }
 
+function add_edit_task(id, task_name_id, isnowedit) {
+	let edit_task_list = document.getElementById("edit-task-list");
+	let new_task = document.createElement("div");
+	if (isnowedit) {
+		new_task.className = "task-nowedit-box";
+	} else {
+		new_task.className = "task-edit-box";
+	}
+	new_task.innerHTML = `<div class="task_number">${id}</div>
+	<div class="edit-task-name">${task_name_id}</div>`
+	edit_task_list.appendChild(new_task);
+	let task_separator = document.createElement("div");
+	task_separator.className = "task-separator";
+	edit_task_list.appendChild(task_separator);
+}
+
 function make_edit_task_list() {
 	if (noweditid == -1) {
 		return;
@@ -103,35 +119,11 @@ function make_edit_task_list() {
 	}, function(result) {
 		let task_name_list = result.task_name_list;
 		if (editid != 1) {
-			let new_task = document.createElement("div");
-			new_task.style = "display: flex;";
-			new_task.innerHTML = `<div class="task_number">${editid-1}</div>
-			<div class="edit-task-name">${task_name_list[editid-1]}</div>`
-			edit_task_list.appendChild(new_task);
-			let task_separator = document.createElement("div");
-			task_separator.className = "task-separator";
-			task_separator.innerHTML = "1";
-			edit_task_list.appendChild(task_separator);
+			add_edit_task(editid - 1, task_name_list[editid - 1], false);
 		}
-		let new_task = document.createElement("div");
-		new_task.style = "display: flex; color: red;";
-		new_task.innerHTML = `<div class="task_number">${editid}</div>
-			<div class="edit-task-name">${task_name_list[editid]}</div>`
-		edit_task_list.appendChild(new_task);
-		let task_separator = document.createElement("div");
-		task_separator.className = "task-separator";
-		task_separator.innerHTML = "1";
-		edit_task_list.appendChild(task_separator);
+		add_edit_task(editid, task_name_list[editid], true);
 		if (editid != Object.keys(task_name_list).length) {
-			let new_task = document.createElement("div");
-			new_task.style = "display: flex;";
-			new_task.innerHTML = `<div class="task_number">${editid+1}</div>
-			<div class="edit-task-name">${task_name_list[editid+1]}</div>`
-			edit_task_list.appendChild(new_task);
-			let task_separator = document.createElement("div");
-			task_separator.className = "task-separator";
-			task_separator.innerHTML = "1";
-			edit_task_list.appendChild(task_separator);
+			add_edit_task(editid + 1, task_name_list[editid + 1], false);
 		}
 		edit_task_list.removeChild(edit_task_list.lastChild);
 	});
@@ -216,7 +208,7 @@ function make_task_list(task_url_list, task_name_list) {
 
 			len++;
 			let new_task = document.createElement("div");
-			new_task.style = "display: flex;";
+			new_task.className = "task-box";
 			new_task.innerHTML = `<div class="task_number">${nowid=="all"?key:`${len}<br>(${key})`}</div>
 			<div class="task">
 				<span class="task-name"}>${task_name_list[key]}</span>
@@ -229,7 +221,6 @@ function make_task_list(task_url_list, task_name_list) {
 			tesk_list.appendChild(new_task);
 			let task_separator = document.createElement("div");
 			task_separator.className = "task-separator";
-			task_separator.innerHTML = "1";
 			tesk_list.appendChild(task_separator);
 		}
 		if (tesk_list.innerHTML != "") {
@@ -251,15 +242,15 @@ for (let i = 0; i < websites.length; i++) {
 	new_label.innerHTML = websites[i][1];
 
 	function change_label() {
-		document.getElementById(nowid).style.backgroundColor = "";
+		document.getElementById(nowid).className = "label";
 		nowid = websites[i][0];
-		new_label.style.backgroundColor = "grey";
+		new_label.className = "now-label";
 		make_task_list();
 	}
 	new_label.addEventListener("click", change_label);
 	label_list.appendChild(new_label);
 }
-document.getElementById("all").style.backgroundColor = "grey";
+document.getElementById("all").className = "now-label";
 
 function change_name() {
 	chrome.storage.local.get({
@@ -374,14 +365,13 @@ function export_task_list() {
 			];
 		}
 		const blob = new Blob([JSON.stringify(task_list)], {
-			'type': 'application/json'
+			"type": "application/json"
 		});
 		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
+		const a = document.createElement("a");
 		a.href = url;
-		a.download = 'task_list.json';
-		a.style =
-			'display: none';
+		a.download = "task_list.json";
+		a.style = "display: none";
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
@@ -389,10 +379,10 @@ function export_task_list() {
 }
 
 function import_task_list_cover() {
-	const input = document.createElement('input');
-	input.type = 'file';
-	input.style = 'display: none';
-	input.accept = '.json';
+	const input = document.createElement("input");
+	input.type = "file";
+	input.style = "display: none";
+	input.accept = ".json";
 	input.addEventListener("change", function() {
 		const file = input.files[0];
 		const reader = new FileReader();
@@ -431,9 +421,9 @@ function include(task_list, task_name, task_url) {
 
 function import_task_list_insert() {
 	const input = document.createElement('input');
-	input.type = 'file';
-	input.style = 'display: none';
-	input.accept = '.json';
+	input.type = "file";
+	input.style = "display: none";
+	input.accept = ".json";
 	input.addEventListener("change", function() {
 		const file = input.files[0];
 		const reader = new FileReader();

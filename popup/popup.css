@@ -41,6 +41,16 @@
 	margin: 3px;
 	height: 25px;
 	padding: 1px;
+	background-color: white;
+}
+
+.now-label {
+	border: 2px solid black;
+	font-size: 20px;
+	margin: 3px;
+	height: 25px;
+	padding: 1px;
+	background-color: grey;
 }
 
 #task-list {
@@ -155,4 +165,69 @@
 	font-size: 20px;
 	text-align: center;
 	float: left;
+}
+
+#change-pos {
+	height: 33px;
+	width: 177px;
+	font-size: 20px;
+}
+
+#submit-change-pos {
+	height: 33px;
+}
+
+#pos-up {
+	border: 2px solid black;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+#pos-down {
+	border: 2px solid black;
+}
+
+.change-input-span {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.change-input-box {
+	font-size: 20px;
+	height: 33px;
+}
+
+#change-pos-span1 {
+	font-size: 20px;
+	font-weight: bold;
+	margin-top: 10px;
+}
+
+#change-pos-span2 {
+	font-size: 19px;
+	white-space: pre-wrap;
+}
+
+.pos-span {
+	font-size: 20px;
+	font-weight: bold;
+	align-items: center;
+}
+
+.flex-box {
+	display: flex;
+}
+
+.task-box {
+	display: flex;
+}
+
+.task-edit-box {
+	display: flex;
+}
+
+.task-nowedit-box {
+	display: flex;
+	color: red;
 }
