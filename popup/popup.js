@@ -1,10 +1,32 @@
 import {
-	websites,
+	gdata,
 	websites_get_name
 } from "./globals.js";
 
-var nowid = "all";
-var noweditid = -1;
+import {
+	back_to_task_list,
+	make_task_list,
+	make_edit_task_list,
+	make_label_list
+} from "./ui.js";
+
+function task_list_include(id, name, url) {
+	for (let i = 0; i < id; i++) {
+		if (gdata.task_name_list[i] === name && gdata.task_url_list[i] === url) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function unique_task_list() {
+	for (let i = gdata.task_name_list.length - 1; i >= 0; i--) {
+		if (task_list_include(i, gdata.task_name_list[i], gdata.task_url_list[i])) {
+			gdata.task_name_list.splice(i, 1);
+			gdata.task_url_list.splice(i, 1);
+		}
+	}
+}
 
 function get_name(tabs, callback) {
 	for (let i = 0; i < websites_get_name.length; i++) {
@@ -13,11 +35,13 @@ function get_name(tabs, callback) {
 				action: "gethtml",
 				web: websites_get_name[i][1],
 				selector: websites_get_name[i][2]
-			}, function(response) {
+			}, (response) => {
 				if (chrome.runtime.lastError) {
 					console.error(chrome.runtime.lastError.message);
+					callback(tabs[0].title);
+					return;
 				}
-				if (typeof(response) != "string" || response.trim() == "") {
+				if (typeof (response) != "string" || response.trim() == "") {
 					callback(tabs[0].title);
 				} else {
 					callback(websites_get_name[i][3](response, tabs[0].url));
@@ -33,41 +57,26 @@ function add_task(pos) {
 	chrome.tabs.query({
 		active: true,
 		currentWindow: true
-	}, function(tabs) {
+	}, (tabs) => {
+		if (!tabs.length) {
+			console.error("未找到活跃标签页");
+			return;
+		}
 		let url = tabs[0].url;
-		get_name(tabs, function(name) {
-			chrome.storage.local.get({
-				task_url_list: {},
-				task_name_list: {}
-			}, function(result) {
-				let new_task_url_list = result.task_url_list;
-				let new_task_name_list = result.task_name_list;
-				let have = false;
-				for (let key in new_task_url_list) {
-					if (new_task_url_list[key] == url && new_task_name_list[key] == name) {
-						have = true;
-						break;
-					}
-				}
-				if (!have) {
-					if (pos == "head") {
-						for (let i = Object.keys(new_task_url_list).length; i >= 1; i--) {
-							new_task_name_list[i + 1] = new_task_name_list[i];
-							new_task_url_list[i + 1] = new_task_url_list[i];
-						}
-						new_task_url_list[1] = url;
-						new_task_name_list[1] = name;
-					} else {
-						new_task_url_list[Object.keys(new_task_url_list).length + 1] = url;
-						new_task_name_list[Object.keys(new_task_name_list).length + 1] =
-							name;
-					}
+		get_name(tabs, (name) => {
+			if (!task_list_include(gdata.task_name_list.length, name, url)) {
+				if (pos == "head") {
+					gdata.task_name_list.unshift(name);
+					gdata.task_url_list.unshift(url);
+				} else {
+					gdata.task_name_list.push(name);
+					gdata.task_url_list.push(url);
 				}
 				chrome.storage.local.set({
-					task_name_list: new_task_name_list,
-					task_url_list: new_task_url_list
+					task_name_list: gdata.task_name_list,
+					task_url_list: gdata.task_url_list
 				});
-			});
+			}
 		});
 	});
 }
@@ -80,302 +89,97 @@ function add_task_tail() {
 	add_task("tail");
 }
 
-
-function back() {
-	document.getElementById("add-task-head").style.display = "";
-	document.getElementById("add-task-tail").style.display = "";
-	document.getElementById("label-list").style.display = "flex";
-	document.getElementById("task-list").style.display = "flex";
-	document.getElementById("edit-task").style.display = "none";
-	document.getElementById("import-export-task-list").style.display = "";
-	noweditid = -1;
-}
-
-function add_edit_task(id, task_name_id, isnowedit) {
-	let edit_task_list = document.getElementById("edit-task-list");
-	let new_task = document.createElement("div");
-	if (isnowedit) {
-		new_task.className = "task-nowedit-box";
-	} else {
-		new_task.className = "task-edit-box";
-	}
-	new_task.innerHTML = `<div class="task_number">${id}</div>
-	<div class="edit-task-name">${task_name_id}</div>`
-	edit_task_list.appendChild(new_task);
-	let task_separator = document.createElement("div");
-	task_separator.className = "task-separator";
-	edit_task_list.appendChild(task_separator);
-}
-
-function make_edit_task_list() {
-	if (noweditid == -1) {
-		return;
-	}
-	let editid = parseInt(noweditid);
-	let edit_task_list = document.getElementById("edit-task-list");
-	edit_task_list.innerHTML = "";
-	chrome.storage.local.get({
-		task_name_list: {}
-	}, function(result) {
-		let task_name_list = result.task_name_list;
-		if (editid != 1) {
-			add_edit_task(editid - 1, task_name_list[editid - 1], false);
-		}
-		add_edit_task(editid, task_name_list[editid], true);
-		if (editid != Object.keys(task_name_list).length) {
-			add_edit_task(editid + 1, task_name_list[editid + 1], false);
-		}
-		edit_task_list.removeChild(edit_task_list.lastChild);
-	});
-}
-
-function make_task_list(task_url_list, task_name_list) {
-	let tesk_list = document.getElementById("task-list");
-	chrome.storage.local.get({
-		task_url_list: {},
-		task_name_list: {}
-	}, function(result) {
-		let task_url_list = result.task_url_list;
-		let task_name_list = result.task_name_list;
-		let len = 0;
-		document.getElementById("task-list").innerHTML = "";
-		for (let key in task_url_list) {
-			if (nowid != "all") {
-				let tmp = 0,
-					realpre;
-				for (let i = 1; i < websites.length; i++) {
-					if (websites[i][0] == nowid) {
-						realpre = websites[i][2];
-					}
-					if (task_url_list[key].startsWith(websites[i][2])) {
-						if (websites[i][2].startsWith(websites[tmp][2]) || tmp == 0) {
-							tmp = i;
-						}
-					}
-				}
-				if (tmp == 0 || websites[tmp][2] != realpre) {
-					continue;
-				}
-			}
-
-			function jump_to_page() {
-				chrome.tabs.create({
-					url: task_url_list[key]
-				});
-			}
-
-			function delete_task() {
-				chrome.storage.local.get({
-					task_url_list: {},
-					task_name_list: {}
-				}, function(result) {
-					let new_task_url_list = result.task_url_list;
-					let new_task_name_list = result.task_name_list;
-					let have = false;
-					for (let nkey in new_task_url_list) {
-						if (new_task_url_list[nkey] == task_url_list[key] && new_task_name_list[
-								nkey] ==
-							task_name_list[key]) {
-							have = true;
-						}
-						if (have) {
-							new_task_name_list[parseInt(nkey)] = new_task_name_list[parseInt(nkey) + 1];
-							new_task_url_list[parseInt(nkey)] = new_task_url_list[parseInt(nkey) + 1];
-						}
-					}
-					delete new_task_name_list[Object.keys(new_task_name_list).length];
-					delete new_task_url_list[Object.keys(new_task_url_list).length];
-					chrome.storage.local.set({
-						task_name_list: new_task_name_list,
-						task_url_list: new_task_url_list
-					});
-				});
-			}
-
-			function edit_task() {
-				document.getElementById("add-task-head").style.display = "none";
-				document.getElementById("add-task-tail").style.display = "none";
-				document.getElementById("label-list").style.display = "none";
-				document.getElementById("task-list").style.display = "none";
-				document.getElementById("import-export-task-list").style.display = "none";
-				document.getElementById("edit-task").style.display = "flex";
-				noweditid = key;
-				document.getElementById("change-name").value = task_name_list[key];
-				document.getElementById("change-url").value = task_url_list[key];
-				document.getElementById("change-pos").value = "";
-				make_edit_task_list();
-			}
-
-			len++;
-			let new_task = document.createElement("div");
-			new_task.className = "task-box";
-			new_task.innerHTML = `<div class="task_number">${nowid=="all"?key:`${len}<br>(${key})`}</div>
-			<div class="task">
-				<span class="task-name"}>${task_name_list[key]}</span>
-				<img class="task-edit" src="../images/edit.jpg" alt="edit"/>
-				<img class="task-delete" src="../images/delete.jpeg" alt="delete"/>
-			</div>`;
-			new_task.getElementsByClassName("task-name")[0].addEventListener("click", jump_to_page);
-			new_task.getElementsByClassName("task-edit")[0].addEventListener("click", edit_task);
-			new_task.getElementsByClassName("task-delete")[0].addEventListener("click", delete_task);
-			tesk_list.appendChild(new_task);
-			let task_separator = document.createElement("div");
-			task_separator.className = "task-separator";
-			tesk_list.appendChild(task_separator);
-		}
-		if (tesk_list.innerHTML != "") {
-			tesk_list.removeChild(tesk_list.lastChild);
-		}
-	});
-}
-
-chrome.storage.onChanged.addListener(function(changes, areaName) {
-	make_task_list();
-	make_edit_task_list();
-});
-
-let label_list = document.getElementById("label-list");
-for (let i = 0; i < websites.length; i++) {
-	let new_label = document.createElement("div");
-	new_label.id = websites[i][0];
-	new_label.className = "label";
-	new_label.innerHTML = websites[i][1];
-
-	function change_label() {
-		document.getElementById(nowid).className = "label";
-		nowid = websites[i][0];
-		new_label.className = "now-label";
-		make_task_list();
-	}
-	new_label.addEventListener("click", change_label);
-	label_list.appendChild(new_label);
-}
-document.getElementById("all").className = "now-label";
-
 function change_name() {
-	chrome.storage.local.get({
-		task_name_list: {}
-	}, function(result) {
-		let new_task_name_list = result.task_name_list;
-		new_task_name_list[noweditid] = document.getElementById("change-name").value;
-		chrome.storage.local.set({
-			task_name_list: new_task_name_list
-		});
+	gdata.task_name_list[gdata.noweditid] = document.getElementById("change-name").value;
+	chrome.storage.local.set({
+		task_name_list: gdata.task_name_list
 	});
 }
-
 
 function change_url() {
-	chrome.storage.local.get({
-		task_url_list: {}
-	}, function(result) {
-		let new_task_url_list = result.task_url_list;
-		let next_url = document.getElementById("change-url").value;
-		if (!(/.:\/\/./.test(next_url))) {
-			next_url = "https://" + next_url;
+	let next_url = document.getElementById("change-url").value.trim();
+	if (!next_url) return;
+	try {
+		new URL(next_url);
+	} catch {
+		next_url = `https://${next_url}`;
+		try {
+			new URL(next_url);
+		} catch {
+			alert("URL格式无效");
+			return;
 		}
-		document.getElementById("change-url").value = next_url;
-		new_task_url_list[noweditid] = next_url;
-		chrome.storage.local.set({
-			task_url_list: new_task_url_list
-		});
+	}
+	document.getElementById("change-url").value = next_url;
+	gdata.task_url_list[gdata.noweditid] = next_url;
+	chrome.storage.local.set({
+		task_url_list: gdata.task_url_list
 	});
 }
 
-function change_pos(next_pos, canalert) {
-	chrome.storage.local.get({
-		task_url_list: {},
-		task_name_list: {}
-	}, function(result) {
-		let new_task_url_list = result.task_url_list;
-		let new_task_name_list = result.task_name_list;
-		if (next_pos > parseInt(Object.keys(new_task_name_list).length)) {
-			if (canalert) {
-				alert("输入的数请小于题目数量");
-			}
-			return;
-		}
-		let have = false;
-		let now_name = new_task_name_list[noweditid];
-		let now_url = new_task_url_list[noweditid];
-		let editid = parseInt(noweditid);
-		if (next_pos < editid) {
-			for (let i = editid; i > next_pos; i--) {
-				new_task_name_list[i] = new_task_name_list[i - 1];
-				new_task_url_list[i] = new_task_url_list[i - 1];
-			}
-			new_task_name_list[next_pos] = now_name;
-			new_task_url_list[next_pos] = now_url;
-		} else {
-			for (let i = editid; i < next_pos; i++) {
-				new_task_name_list[i] = new_task_name_list[i + 1];
-				new_task_url_list[i] = new_task_url_list[i + 1];
-			}
-			new_task_name_list[next_pos] = now_name;
-			new_task_url_list[next_pos] = now_url;
-		}
-		noweditid = next_pos;
-		chrome.storage.local.set({
-			task_name_list: new_task_name_list,
-			task_url_list: new_task_url_list
-		});
+function change_pos(next_pos) {
+	let now_name = gdata.task_name_list[gdata.noweditid];
+	let now_url = gdata.task_url_list[gdata.noweditid];
+	gdata.task_name_list.splice(gdata.noweditid, 1);
+	gdata.task_url_list.splice(gdata.noweditid, 1);
+	gdata.task_name_list.splice(next_pos, 0, now_name);
+	gdata.task_url_list.splice(next_pos, 0, now_url);
+	gdata.noweditid = next_pos;
+	chrome.storage.local.set({
+		task_name_list: gdata.task_name_list,
+		task_url_list: gdata.task_url_list
 	});
 }
 
 function pos_up() {
-	if (noweditid == "1") {
+	if (gdata.noweditid == 0) {
 		return;
 	}
-	change_pos(parseInt(noweditid) - 1, true);
+	change_pos(gdata.noweditid - 1);
 }
 
 function pos_down() {
-	change_pos(parseInt(noweditid) + 1, false);
+	if (gdata.noweditid == gdata.task_name_list.length - 1) {
+		return;
+	}
+	change_pos(gdata.noweditid + 1);
 }
 
 function submit_change_pos() {
 	let next_pos = document.getElementById("change-pos").value;
-	if (!(/^[0-9]+$/.test(next_pos))) {
-		alert("请输入一个正整数");
-		return;
-	}
 	next_pos = parseInt(next_pos);
-	if (next_pos <= 0) {
+	if (isNaN(next_pos) || next_pos <= 0) {
 		alert("请输入一个正整数");
 		return;
 	}
-	if (next_pos == parseInt(noweditid)) {
+	if (next_pos > gdata.task_name_list.length) {
+		alert(`输入的位置请小于等于${gdata.task_name_list.length}`);
+		document.getElementById("change-pos").value = gdata.task_name_list.length;
 		return;
 	}
-	change_pos(next_pos, true);
+	next_pos--;
+	if (next_pos == gdata.noweditid) {
+		return;
+	}
+	change_pos(next_pos);
 }
 
 function export_task_list() {
-	chrome.storage.local.get({
-		task_url_list: {},
-		task_name_list: {}
-	}, function(result) {
-		let task_url_list = result.task_url_list;
-		let task_name_list = result.task_name_list;
-		let task_list = {};
-		for (let i in task_name_list) {
-			task_list[i] = [
-				task_name_list[i],
-				task_url_list[i]
-			];
-		}
-		const blob = new Blob([JSON.stringify(task_list)], {
-			"type": "application/json"
-		});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = "task_list.json";
-		a.style = "display: none";
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
+	let task_list = {
+		"task_name_list": gdata.task_name_list,
+		"task_url_list": gdata.task_url_list
+	};
+	const blob = new Blob([JSON.stringify(task_list)], {
+		"type": "application/json"
 	});
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement("a");
+	a.href = url;
+	a.download = "task_list.json";
+	a.style = "display: none";
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
 }
 
 function import_task_list_cover() {
@@ -383,24 +187,32 @@ function import_task_list_cover() {
 	input.type = "file";
 	input.style = "display: none";
 	input.accept = ".json";
-	input.addEventListener("change", function() {
+	input.addEventListener("change", () => {
 		const file = input.files[0];
 		const reader = new FileReader();
-		reader.addEventListener("loadend", function() {
-			let task_list = JSON.parse(reader.result);
-			if (!task_list) {
-				alert("导入失败");
+		reader.addEventListener("loadend", () => {
+			let task_list;
+			try {
+				task_list = JSON.parse(reader.result);
+			} catch (e) {
+				alert("导入失败：JSON格式错误");
+				console.error("解析错误：", e);
 				return;
 			}
-			let new_task_name_list = {};
-			let new_task_url_list = {};
-			for (let i in task_list) {
-				new_task_name_list[i] = task_list[i][0];
-				new_task_url_list[i] = task_list[i][1];
+			if (!Array.isArray(task_list.task_url_list) || !Array.isArray(task_list.task_url_list)) {
+				alert("导入数据格式错误：缺少任务列表");
+				return;
 			}
+			if (task_list.task_url_list.length !== task_list.task_url_list.length) {
+				alert("导入数据错误：名称与URL数量不匹配");
+				return;
+			}
+			gdata.task_url_list = task_list.task_url_list;
+			gdata.task_name_list = task_list.task_name_list;
+			unique_task_list();
 			chrome.storage.local.set({
-				task_name_list: new_task_name_list,
-				task_url_list: new_task_url_list
+				task_name_list: gdata.task_name_list,
+				task_url_list: gdata.task_url_list
 			});
 		});
 		reader.readAsText(file);
@@ -410,84 +222,47 @@ function import_task_list_cover() {
 	document.body.removeChild(input);
 }
 
-function include(task_list, task_name, task_url) {
-	for (let i = 0; i < task_list.length; i++) {
-		if (task_list[i][0] == task_name && task_list[i][1] == task_url) {
-			return true;
-		}
-	}
-	return false;
-}
-
 function import_task_list_insert() {
-	const input = document.createElement('input');
+	const input = document.createElement("input");
 	input.type = "file";
 	input.style = "display: none";
 	input.accept = ".json";
-	input.addEventListener("change", function() {
+	input.addEventListener("change", () => {
 		const file = input.files[0];
 		const reader = new FileReader();
-		reader.addEventListener("loadend", function() {
-			let task_list = JSON.parse(reader.result);
-			if (!task_list) {
-				alert("导入失败");
+		reader.addEventListener("loadend", () => {
+			let task_list;
+			try {
+				task_list = JSON.parse(reader.result);
+			} catch (e) {
+				alert("导入失败：JSON格式错误");
+				console.error("解析错误：", e);
+				return;
+			}
+			if (!Array.isArray(task_list.task_url_list) || !Array.isArray(task_list.task_url_list)) {
+				alert("导入数据格式错误：缺少任务列表");
+				return;
+			}
+			if (task_list.task_url_list.length !== task_list.task_url_list.length) {
+				alert("导入数据错误：名称与URL数量不匹配");
 				return;
 			}
 			let index = document.getElementById("import-task-list-index").value;
-			if (!(/^[0-9]+$/.test(index))) {
-				alert("请输入一个正整数");
-				return;
-			}
 			index = parseInt(index);
-			if (index <= 0) {
+			if (isNaN(index) || index <= 0) {
 				alert("请输入一个正整数");
 				return;
 			}
-			chrome.storage.local.get({
-				task_name_list: {},
-				task_url_list: {}
-			}, function(result) {
-				let task_name_list = result.task_name_list;
-				let task_url_list = result.task_url_list;
-				let new_task_name_list = {};
-				let new_task_url_list = {};
-				if (index != 1 && index > parseInt(Object.keys(task_name_list).length)) {
-					alert("输入的数请小于题目数量");
-					return;
-				}
-				let task = [];
-				let tot = 0;
-				for (let i = 1; i < index; i++) {
-					if (include(task, task_name_list[i], task_url_list[i])) {
-						continue;
-					}
-					task.push([task_name_list[i], task_url_list[i]]);
-					tot++;
-					new_task_name_list[tot] = task_name_list[i];
-					new_task_url_list[tot] = task_url_list[i];
-				}
-				for (let i in task_list) {
-					if (include(task, task_list[i][0], task_list[i][1])) {
-						continue;
-					}
-					task.push([task_list[i][0], task_list[i][1]]);
-					tot++;
-					new_task_name_list[tot] = task_list[i][0];
-					new_task_url_list[tot] = task_list[i][1];
-				}
-				for (let i = index; i <= parseInt(Object.keys(task_name_list).length); i++) {
-					if (include(task, task_name_list[i], task_url_list[i])) {
-						continue;
-					}
-					task.push([task_name_list[i], task_url_list[i]]);
-					tot++;
-					new_task_name_list[tot] = task_name_list[i];
-					new_task_url_list[tot] = task_url_list[i];
-				}
-				chrome.storage.local.set({
-					task_name_list: new_task_name_list,
-					task_url_list: new_task_url_list
-				});
+			if (index > gdata.task_name_list.length) {
+				alert(`输入的位置请小于等于${gdata.task_name_list.length}`);
+				return;
+			}
+			gdata.task_name_list.splice(index - 1, 0, ...task_list.task_name_list)
+			gdata.task_url_list.splice(index - 1, 0, ...task_list.task_url_list)
+			unique_task_list();
+			chrome.storage.local.set({
+				task_name_list: gdata.task_name_list,
+				task_url_list: gdata.task_url_list
 			});
 		});
 		reader.readAsText(file);
@@ -497,31 +272,64 @@ function import_task_list_insert() {
 	document.body.removeChild(input);
 }
 
-document.getElementById("add-task-head").addEventListener("click", add_task_head);
-document.getElementById("add-task-tail").addEventListener("click", add_task_tail);
-document.getElementById("back").addEventListener("click", back);
-document.getElementById("submit-change-name").addEventListener("click", change_name);
-document.getElementById("change-name").addEventListener("keydown", function(event) {
-	if (event.key == "Enter") {
-		change_name();
+chrome.storage.onChanged.addListener((changes, areaName) => {
+	if (areaName !== "local") {
+		return;
+	}
+	const hasRelevantChange = changes.task_name_list || changes.task_url_list;
+	if (hasRelevantChange) {
+		if (gdata.noweditid === -1) {
+			make_task_list();
+		} else {
+			make_edit_task_list();
+		}
 	}
 });
-document.getElementById("submit-change-url").addEventListener("click", change_url);
-document.getElementById("change-url").addEventListener("keydown", function(event) {
-	if (event.key == "Enter") {
-		change_url();
-	}
-});
-document.getElementById("pos-up").addEventListener("click", pos_up);
-document.getElementById("pos-down").addEventListener("click", pos_down);
-document.getElementById("submit-change-pos").addEventListener("click", submit_change_pos);
-document.getElementById("change-pos").addEventListener("keydown", function(event) {
-	if (event.key == "Enter") {
-		submit_change_pos();
-	}
-});
-document.getElementById("export-task-list").addEventListener("click", export_task_list);
-document.getElementById("import-task-list-cover").addEventListener("click", import_task_list_cover);
-document.getElementById("import-task-list-insert").addEventListener("click", import_task_list_insert);
 
-make_task_list();
+document.addEventListener("DOMContentLoaded", () => {
+	document.getElementById("add-task-head").addEventListener("click", add_task_head);
+	document.getElementById("add-task-tail").addEventListener("click", add_task_tail);
+	document.getElementById("back-to-task-list").addEventListener("click", back_to_task_list);
+	document.getElementById("submit-change-name").addEventListener("click", change_name);
+	document.getElementById("change-name").addEventListener("keydown", (event) => {
+		if (event.key == "Enter") {
+			change_name();
+		}
+	});
+	document.getElementById("submit-change-url").addEventListener("click", change_url);
+	document.getElementById("change-url").addEventListener("keydown", (event) => {
+		if (event.key == "Enter") {
+			change_url();
+		}
+	});
+	document.getElementById("pos-up").addEventListener("click", pos_up);
+	document.getElementById("pos-down").addEventListener("click", pos_down);
+	document.getElementById("submit-change-pos").addEventListener("click", submit_change_pos);
+	document.getElementById("change-pos").addEventListener("keydown", (event) => {
+		if (event.key == "Enter") {
+			submit_change_pos();
+		}
+	});
+	document.getElementById("export-task-list").addEventListener("click", export_task_list);
+	document.getElementById("import-task-list-cover").addEventListener("click", import_task_list_cover);
+	document.getElementById("import-task-list-insert").addEventListener("click", import_task_list_insert);
+
+	make_label_list();
+
+	chrome.storage.local.get(["task_name_list", "task_url_list"]).then((result) => {
+		gdata.task_name_list = result.task_name_list;
+		gdata.task_url_list = result.task_url_list;
+
+		if (gdata.task_name_list === undefined) {
+			gdata.task_name_list = [];
+			gdata.task_url_list = [];
+			chrome.storage.local.set({
+				task_name_list: gdata.task_name_list,
+				task_url_list: gdata.task_url_list
+			});
+		}
+
+		make_task_list();
+	});
+
+});

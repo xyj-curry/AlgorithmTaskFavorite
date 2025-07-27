@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Algorithm Task Favorite</title>
-		<link rel="stylesheet" href="./popup.css">
-	</head>
-	<body>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Algorithm Task Favorite</title>
+	<link rel="stylesheet" href="./popup.css">
+</head>
+
+<body>
+	<div id="setting">
+	</div>
+	<div id="task">
 		<div>
 			<div id="add-task-head">添加题目(顶)</div>
 			<div id="add-task-tail">添加题目(底)</div>
@@ -25,30 +30,34 @@
 				<input id="import-task-list-index" type="text" />
 			</div>
 		</div>
-		<div id="edit-task">
-			<img src="../images/back.jpg" alt="返回" id="back" />
-			<div>
-				<span class="change-input-span">重命名:&nbsp;</span>
-				<input id="change-name" class="change-input-box" type="text" />
-				<button id="submit-change-name">确认</button>
-			</div>
-			<div>
-				<span class="change-input-span">修改url:&nbsp;</span>
-				<input id="change-url" class="change-input-box" type="text" />
-				<button id="submit-change-url">确认</button>
-			</div>
-			<span id="change-pos-span1">修改位置:</span>
-			<span id="change-pos-span2">(此处显示的是当前位置及其上下题目, 红色为当前题目)</span>
-			<div id="edit-task-list">
-			</div>
-			<div>
-				<span class="pos-span">位置:</span>
-				<input id="change-pos" type="text" />
-				<button id="submit-change-pos">确认</button>
-				<img id="pos-up" src="../images/up.jpg" alt="上" />
-				<img id="pos-down" src="../images/down.jpg" alt="下" />
-			</div>
+	</div>
+	<div id="edit-task">
+		<img src="../images/back.jpg" alt="返回" id="back-to-task-list" />
+		<div>
+			<span class="change-input-span">重命名:&nbsp;</span>
+			<input id="change-name" class="change-input-box" type="text" />
+			<button id="submit-change-name">确认</button>
 		</div>
-		<script type="module" src="popup.js"></script>
-	</body>
+		<div>
+			<span class="change-input-span">修改url:&nbsp;</span>
+			<input id="change-url" class="change-input-box" type="text" />
+			<button id="submit-change-url">确认</button>
+		</div>
+		<span id="change-pos-span1">修改位置:</span>
+		<span id="change-pos-span2">(此处显示的是当前位置及其上下题目, 红色为当前题目)</span>
+		<div id="edit-task-list">
+		</div>
+		<div>
+			<span class="pos-span">位置:</span>
+			<input id="change-pos" type="text" />
+			<button id="submit-change-pos">确认</button>
+			<img id="pos-up" src="../images/up.jpg" alt="上" />
+			<img id="pos-down" src="../images/down.jpg" alt="下" />
+		</div>
+	</div>
+	<script type="module" src="./globals.js"></script>
+	<script type="module" src="./ui.js"></script>
+	<script type="module" src="./popup.js"></script>
+</body>
+
 </html>

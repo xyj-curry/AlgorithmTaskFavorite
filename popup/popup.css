@@ -64,7 +64,7 @@
 	margin-bottom: 1px;
 }
 
-.task {
+.task-name-box {
 	white-space: pre-wrap;
 	display: flex;
 	flex-direction: row;
@@ -114,7 +114,7 @@
 	padding: 5px;
 }
 
-#back {
+#back-to-task-list {
 	width: 35px;
 	height: 35px;
 }
@@ -230,4 +230,8 @@
 .task-nowedit-box {
 	display: flex;
 	color: red;
+}
+
+#setting {
+	display: none;
 }
