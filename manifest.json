@@ -1,36 +1,32 @@
 {
-	"manifest_version": 3,
-	"name": "Algorithm Task Favorite",
-	"version": "1.0.1",
-	"description": "Save algorithm questions from all websites",
-	"icons": {
-		"48": "images/logo.png"
-	},
-	"content_scripts": [{
-		"js": [
-			"scripts/gethtml.js"
-		],
-		"matches": [
-			"https://www.luogu.com.cn/*",
-			"https://www.luogu.com/*",
-			"https://codeforces.com/*",
-			"https://atcoder.jp/*",
-			"https://iai.sh.cn/*",
-			"https://vjudge.net/*",
-			"http://poj.org/*",
-			"https://ac.nowcoder.com/*",
-			"https://qoj.ac/*",
-			"https://www.cnblogs.com/*"
-		]
-	}],
-	"action": {
-		"48": "images/logo.png",
-		"default_title": "Algorithm Task Favorite",
-		"default_popup": "popup/popup.html"
-	},
-	"permissions": [
-		"storage",
-		"tabs",
-		"scripting"
-	]
+    "manifest_version": 3,
+    "name": "Algorithm Task Favorite",
+    "version": "1.0.1",
+    "description": "Save algorithm questions from all websites",
+    "icons": {
+        "48": "images/logo.png"
+    },
+    "content_scripts": [
+        {
+            "js": ["scripts/gethtml.js"],
+            "matches": [
+                "https://www.luogu.com.cn/*",
+                "https://www.luogu.com/*",
+                "https://codeforces.com/*",
+                "https://atcoder.jp/*",
+                "https://iai.sh.cn/*",
+                "https://vjudge.net/*",
+                "http://poj.org/*",
+                "https://ac.nowcoder.com/*",
+                "https://qoj.ac/*",
+                "https://www.cnblogs.com/*"
+            ]
+        }
+    ],
+    "action": {
+        "48": "images/logo.png",
+        "default_title": "Algorithm Task Favorite",
+        "default_popup": "popup/popup.html"
+    },
+    "permissions": ["storage", "tabs", "scripting"]
 }
